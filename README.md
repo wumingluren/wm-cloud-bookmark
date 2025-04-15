@@ -77,6 +77,9 @@ npm build
 npm pack
 ```
 
+## 开源地址
+https://github.com/wumingluren/wm-cloud-bookmark
+
 ## 开源协议
 
 本项目采用 MIT 许可证。
