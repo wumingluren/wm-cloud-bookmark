@@ -1,10 +1,10 @@
 {
   "name": "wm-cloud-bookmark",
   "displayName": "無名云书签",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "packageManager": "pnpm@9.7.1",
-  "description": "[description]",
+  "description": "跨设备，跨环境，跨平台的书签管理工具",
   "scripts": {
     "dev": "npm run clear && cross-env NODE_ENV=development run-p dev:*",
     "dev-firefox": "npm run clear && cross-env NODE_ENV=development EXTENSION=firefox run-p dev:*",
