@@ -144,13 +144,14 @@ export class FeishuService {
 
   /**
    * 保存书签到飞书多维表格
-   * @param bookmark 要保存的书签对象，包含标题和URL
+   * @param bookmark 要保存的书签对象，包含标题、URL和标签
    * @param bookmark.title 书签标题
    * @param bookmark.url 书签URL地址
+   * @param bookmark.tags 书签标签，使用#分隔
    * @returns 返回飞书API的响应数据
    * @throws 当标题或URL为空、URL已存在、或API请求失败时抛出错误
    */
-  public async saveBookmark(bookmark: { title: string; url: string }) {
+  public async saveBookmark(bookmark: { title: string; url: string; tags?: string }) {
     if (!bookmark?.title || !bookmark?.url) {
       throw new Error("书签标题和网址不能为空");
     }
@@ -161,12 +162,20 @@ export class FeishuService {
       throw new Error("该网址已经存在");
     }
 
+    // 处理标签，将#分隔的标签转换为数组
+    let tags: string[] = [];
+    if (bookmark.tags) {
+      tags = bookmark.tags.split('#').filter(tag => tag.trim() !== '');
+    }
+
     const requestBody = {
       fields: {
         标题: bookmark.title,
         网址: {
           link: bookmark.url,
         },
+        // 如果有标签，则添加到请求中
+        ...(tags.length > 0 && { 标签: tags })
       },
     };
 

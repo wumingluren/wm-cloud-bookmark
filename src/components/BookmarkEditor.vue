@@ -9,13 +9,14 @@ interface Props {
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
-  save: [bookmark: { title: string; url: string }];
+  save: [bookmark: { title: string; url: string; tags: string }];
   cancel: [];
 }>();
 
 const formData = ref({
   title: props.title,
   url: props.url,
+  tags: "", // 新增标签字段
 });
 
 const isSaving = ref(false);
@@ -57,6 +58,7 @@ async function handleSave() {
     const bookmarkData = {
       title: formData.value.title,
       url: formData.value.url,
+      tags: formData.value.tags, // 添加标签
     };
 
     const response = (await sendMessage("saveBookmark", bookmarkData)) as {
@@ -111,6 +113,17 @@ async function handleSave() {
             class="w-full h-10 px-3 py-2 border border-solid border-gray-300 rounded-md box-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             placeholder="请输入链接地址"
             required
+          />
+        </div>
+
+        <!-- 新增标签输入框 -->
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700"> 标签 </label>
+          <input
+            v-model="formData.tags"
+            type="text"
+            class="w-full h-10 px-3 py-2 border border-solid border-gray-300 rounded-md box-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            placeholder="使用#分隔多个标签，例如：#工作#学习#参考"
           />
         </div>
 
