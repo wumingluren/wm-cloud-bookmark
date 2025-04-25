@@ -293,7 +293,7 @@ export class FeishuService {
       },
       // 增加标签搜索条件
       {
-        field_name: "标签",
+        field_name: "标签公式",
         operator: "contains",
         value: [query],
       },
