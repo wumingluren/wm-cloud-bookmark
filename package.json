@@ -3,15 +3,15 @@
   "displayName": "無名云书签",
   "version": "0.0.2",
   "private": true,
-  "packageManager": "pnpm@9.7.1",
+  "packageManager": "pnpm@10.32.1",
   "description": "跨设备，跨环境，跨平台的书签管理工具",
   "scripts": {
-    "dev": "npm run clear && cross-env NODE_ENV=development run-p dev:*",
-    "dev-firefox": "npm run clear && cross-env NODE_ENV=development EXTENSION=firefox run-p dev:*",
+    "dev": "pnpm run clear && cross-env NODE_ENV=development run-p dev:*",
+    "dev-firefox": "pnpm run clear && cross-env NODE_ENV=development EXTENSION=firefox run-p dev:*",
     "dev:prepare": "esno scripts/prepare.ts",
-    "dev:background": "npm run build:background -- --mode development",
+    "dev:background": "pnpm run build:background -- --mode development",
     "dev:web": "vite",
-    "dev:js": "npm run build:js -- --mode development",
+    "dev:js": "pnpm run build:js -- --mode development",
     "build": "cross-env NODE_ENV=production run-s clear build:web build:prepare build:background build:js",
     "build:prepare": "esno scripts/prepare.ts",
     "build:background": "vite build --config vite.config.background.mts",
@@ -29,6 +29,10 @@
     "test:e2e": "playwright test",
     "postinstall": "simple-git-hooks",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "element-plus": "^2.9.7"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.27.0",
@@ -77,9 +81,5 @@
   },
   "lint-staged": {
     "*": "eslint --fix"
-  },
-  "dependencies": {
-    "@element-plus/icons-vue": "^2.3.1",
-    "element-plus": "^2.9.7"
   }
 }
