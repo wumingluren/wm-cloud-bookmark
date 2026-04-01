@@ -82,7 +82,7 @@ pnpm i
 ### 目录结构
 
 - src - 主源码目录
-  - contentScript - 注入为 content_script 的脚本和组件
+  - contentScript - 注入为 content\_script 的脚本和组件
   - background - 后台脚本
   - components - 自动导入的 Vue 组件（弹出窗口和选项页面共享）
   - styles - 弹出窗口和选项页面共享的样式
