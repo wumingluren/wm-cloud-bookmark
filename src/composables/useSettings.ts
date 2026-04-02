@@ -1,4 +1,11 @@
 import { useWebExtensionStorage } from './useWebExtensionStorage'
+import { DEFAULT_OMNI_SETTINGS } from '~/omni/constants'
+import type { OmniSettings, OmniTheme } from '~/omni/types'
+import {
+  DEFAULT_NEW_TAB_THEME_ID,
+  type NewTabThemeId,
+  getNewTabThemeById,
+} from '~/newtab/themes'
 
 // 飞书配置类型
 export interface FeishuConfigItem {
@@ -20,6 +27,9 @@ export interface ExportData {
   feishuConfigs: FeishuConfigItem[]
   activeConfigId: string
   otherSettings: OtherSettings
+  omniSettings: OmniSettings
+  omniTheme: OmniTheme
+  newTabTheme: NewTabThemeId
 }
 
 // 存储键名常量
@@ -28,6 +38,9 @@ export const STORAGE_KEYS = {
   ACTIVE_CONFIG_ID: 'active-config-id',
   LEGACY_FEISHU_CONFIG: 'feishu-config',
   OTHER_SETTINGS: 'other-settings',
+  OMNI_SETTINGS: 'omni-settings',
+  OMNI_THEME: 'omni-theme',
+  NEW_TAB_THEME: 'newtab-theme',
 }
 
 // 导出所有设置
@@ -54,6 +67,18 @@ export const otherSettings = useWebExtensionStorage<OtherSettings>(
     recommendCount: 12,
   },
 )
+export const omniSettings = useWebExtensionStorage<OmniSettings>(
+  STORAGE_KEYS.OMNI_SETTINGS,
+  DEFAULT_OMNI_SETTINGS,
+)
+export const omniTheme = useWebExtensionStorage<OmniTheme>(
+  STORAGE_KEYS.OMNI_THEME,
+  'light',
+)
+export const newTabTheme = useWebExtensionStorage<NewTabThemeId>(
+  STORAGE_KEYS.NEW_TAB_THEME,
+  DEFAULT_NEW_TAB_THEME_ID,
+)
 
 // 获取当前活动的配置
 export function getActiveConfig(): FeishuConfigItem | null {
@@ -78,6 +103,9 @@ export function exportSettings(): ExportData {
     feishuConfigs: feishuConfigs.value,
     activeConfigId: activeConfigId.value,
     otherSettings: otherSettings.value,
+    omniSettings: omniSettings.value,
+    omniTheme: omniTheme.value,
+    newTabTheme: newTabTheme.value,
   }
 }
 
@@ -113,6 +141,22 @@ export async function importSettings(data: ExportData): Promise<boolean> {
       otherSettings.value = data.otherSettings
     }
 
+    if (!isValidOmniSettings(data.omniSettings)) {
+      throw new TypeError('无效的配置数据：Omni 面板配置不完整')
+    }
+
+    if (!isValidOmniTheme(data.omniTheme)) {
+      throw new TypeError('无效的配置数据：Omni 主题配置无效')
+    }
+
+    if (!isValidNewTabTheme(data.newTabTheme)) {
+      throw new TypeError('无效的配置数据：新标签页主题配置无效')
+    }
+
+    omniSettings.value = data.omniSettings
+    omniTheme.value = data.omniTheme
+    newTabTheme.value = data.newTabTheme
+
     // 更新旧版配置以保持兼容性
     updateLegacyConfig()
 
@@ -122,6 +166,33 @@ export async function importSettings(data: ExportData): Promise<boolean> {
     console.error('导入设置失败:', error)
     return false
   }
+}
+
+function isValidOmniSettings(value: unknown): value is OmniSettings {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const settings = value as Record<string, unknown>
+
+  return typeof settings.enabled === 'boolean'
+    && typeof settings.searchTabs === 'boolean'
+    && typeof settings.searchBookmarks === 'boolean'
+    && typeof settings.searchHistory === 'boolean'
+    && typeof settings.searchFeishu === 'boolean'
+    && typeof settings.searchActions === 'boolean'
+    && typeof settings.showRecent === 'boolean'
+    && typeof settings.maxResultsPerGroup === 'number'
+    && Number.isFinite(settings.maxResultsPerGroup)
+    && typeof settings.confirmDangerousActions === 'boolean'
+}
+
+function isValidOmniTheme(value: unknown): value is OmniTheme {
+  return value === 'light' || value === 'dark'
+}
+
+function isValidNewTabTheme(value: unknown): value is NewTabThemeId {
+  return typeof value === 'string' && getNewTabThemeById(value).id === value
 }
 
 // 更新旧版配置以保持兼容性
