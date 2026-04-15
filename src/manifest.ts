@@ -49,7 +49,8 @@ export async function getManifest() {
       {
         matches: ['<all_urls>'],
         js: ['dist/contentScripts/index.global.js'],
-        css: ['dist/contentScripts/style.css'],
+        // Content script styles are loaded inside Shadow DOM at runtime to avoid leaking
+        // utility classes like `.hidden` or `.flex` into the host page.
         all_frames: true,
         match_about_blank: true,
         world: 'ISOLATED',
